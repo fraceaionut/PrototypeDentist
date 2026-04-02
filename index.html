@@ -1,1 +1,471 @@
-<h1>Hello</h1>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firebase Auth App</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --border: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 24px 24px 12px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 16px 24px 0;
+    }
+
+    .tab {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    .panel {
+      padding: 24px;
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+    }
+
+    button.primary, button.secondary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    button.secondary {
+      background: #1d4ed8;
+      color: white;
+    }
+
+    .message {
+      margin: 14px 0 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    .profile-card {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .profile-card h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+    }
+
+    .profile-row {
+      margin-bottom: 10px;
+      color: var(--muted);
+    }
+
+    .profile-row strong {
+      color: var(--text);
+    }
+
+    .footer-note {
+      padding: 0 24px 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>Auth cu Firebase</h1>
+      <p>Înregistrare, login, logout și profil salvat în Firestore.</p>
+    </div>
+
+    <div class="tabs" id="guestTabs">
+      <button class="tab active" data-target="registerPanel">Register</button>
+      <button class="tab" data-target="loginPanel">Login</button>
+    </div>
+
+    <section class="panel active" id="registerPanel">
+      <div class="field">
+        <label for="registerName">Nume</label>
+        <input id="registerName" type="text" placeholder="Ion Popescu" />
+      </div>
+      <div class="field">
+        <label for="registerEmail">Email</label>
+        <input id="registerEmail" type="email" placeholder="ion@example.com" />
+      </div>
+      <div class="field">
+        <label for="registerPassword">Parolă</label>
+        <input id="registerPassword" type="password" placeholder="Minimum 6 caractere" />
+      </div>
+      <button class="primary" id="registerBtn">Creează cont</button>
+      <div class="message" id="registerMessage"></div>
+    </section>
+
+    <section class="panel" id="loginPanel">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" placeholder="ion@example.com" />
+      </div>
+      <div class="field">
+        <label for="loginPassword">Parolă</label>
+        <input id="loginPassword" type="password" placeholder="Parola ta" />
+      </div>
+      <button class="secondary" id="loginBtn">Loghează-te</button>
+      <div class="message" id="loginMessage"></div>
+    </section>
+
+    <section class="panel" id="profilePanel">
+      <div class="message" id="profileMessage"></div>
+      <div class="profile-card">
+        <h3>Profil utilizator</h3>
+        <div class="profile-row"><strong>UID:</strong> <span id="profileUid">-</span></div>
+        <div class="profile-row"><strong>Nume:</strong> <span id="profileName">-</span></div>
+        <div class="profile-row"><strong>Email:</strong> <span id="profileEmail">-</span></div>
+        <div class="profile-row"><strong>Creat la:</strong> <span id="profileCreatedAt">-</span></div>
+      </div>
+      <button class="secondary" id="logoutBtn">Logout</button>
+    </section>
+
+    <div class="footer-note">
+      Înainte să rulezi aplicația, completează obiectul <strong>firebaseConfig</strong> din cod și activează <strong>Email/Password</strong> în Firebase Authentication. Pentru Firestore, creează baza de date și setează regulile.
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut,
+      updateProfile
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+    // 1) Creează proiectul în Firebase Console
+    // 2) Add app -> Web
+    // 3) Copiază config-ul aici
+const firebaseConfig = {
+  apiKey: "AIzaSyD-xSrhU3P6R0U0GN9T-hEzsZ3CbGUZmLc",
+  authDomain: "prototypedentist.firebaseapp.com",
+  projectId: "prototypedentist",
+  storageBucket: "prototypedentist.firebasestorage.app",
+  messagingSenderId: "881077220842",
+  appId: "1:881077220842:web:2d162d491f9324799c6e93",
+  measurementId: "G-329N27BD25"
+};
+
+    const hasRealFirebaseConfig = Object.values(firebaseConfig).every(value => value && !String(value).startsWith('PASTE_YOUR'));
+
+    const registerMessage = document.getElementById('registerMessage');
+    const loginMessage = document.getElementById('loginMessage');
+    const profileMessage = document.getElementById('profileMessage');
+
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    const guestTabs = document.getElementById('guestTabs');
+    const registerPanel = document.getElementById('registerPanel');
+    const loginPanel = document.getElementById('loginPanel');
+    const profilePanel = document.getElementById('profilePanel');
+
+    function showMessage(element, text, type = 'error') {
+      element.textContent = text;
+      element.className = `message show ${type}`;
+    }
+
+    function clearMessage(element) {
+      element.textContent = '';
+      element.className = 'message';
+    }
+
+    function switchTo(panelId) {
+      panels.forEach(panel => panel.classList.remove('active'));
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      document.getElementById(panelId).classList.add('active');
+      const activeTab = [...tabs].find(t => t.dataset.target === panelId);
+      if (activeTab) activeTab.classList.add('active');
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        clearMessage(registerMessage);
+        clearMessage(loginMessage);
+        switchTo(tab.dataset.target);
+      });
+    });
+
+    if (!hasRealFirebaseConfig) {
+      showMessage(registerMessage, 'Completează firebaseConfig înainte să folosești aplicația.', 'error');
+    }
+
+    let auth;
+    let db;
+
+    if (hasRealFirebaseConfig) {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+
+      onAuthStateChanged(auth, async (user) => {
+        clearMessage(profileMessage);
+
+        if (!user) {
+          guestTabs.classList.remove('hidden');
+          profilePanel.classList.remove('active');
+          switchTo('registerPanel');
+          return;
+        }
+
+        guestTabs.classList.add('hidden');
+        registerPanel.classList.remove('active');
+        loginPanel.classList.remove('active');
+        profilePanel.classList.add('active');
+
+        document.getElementById('profileUid').textContent = user.uid;
+        document.getElementById('profileEmail').textContent = user.email ?? '-';
+        document.getElementById('profileName').textContent = user.displayName ?? '-';
+
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            document.getElementById('profileName').textContent = data.name || user.displayName || '-';
+
+            const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+            document.getElementById('profileCreatedAt').textContent = createdAt
+              ? createdAt.toLocaleString('ro-RO')
+              : '-';
+          } else {
+            document.getElementById('profileCreatedAt').textContent = '-';
+          }
+        } catch (error) {
+          showMessage(profileMessage, mapFirebaseError(error), 'error');
+        }
+      });
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+      clearMessage(registerMessage);
+      if (!hasRealFirebaseConfig) return;
+
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      if (!name || !email || !password) {
+        showMessage(registerMessage, 'Completează toate câmpurile.', 'error');
+        return;
+      }
+
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(credential.user, { displayName: name });
+
+        await setDoc(doc(db, 'users', credential.user.uid), {
+          uid: credential.user.uid,
+          name,
+          email,
+          createdAt: serverTimestamp()
+        });
+
+        showMessage(registerMessage, 'Cont creat cu succes.', 'success');
+      } catch (error) {
+        showMessage(registerMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      clearMessage(loginMessage);
+      if (!hasRealFirebaseConfig) return;
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        showMessage(loginMessage, 'Introdu email și parolă.', 'error');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showMessage(loginMessage, 'Autentificare reușită.', 'success');
+      } catch (error) {
+        showMessage(loginMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      if (!hasRealFirebaseConfig) return;
+
+      try {
+        await signOut(auth);
+      } catch (error) {
+        showMessage(profileMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    function mapFirebaseError(error) {
+      const code = error?.code || '';
+
+      switch (code) {
+        case 'auth/email-already-in-use':
+          return 'Există deja un cont cu acest email.';
+        case 'auth/invalid-email':
+          return 'Email invalid.';
+        case 'auth/weak-password':
+          return 'Parola este prea slabă. Folosește minimum 6 caractere.';
+        case 'auth/invalid-credential':
+          return 'Email sau parolă greșită.';
+        case 'auth/user-not-found':
+          return 'Utilizatorul nu există.';
+        case 'auth/wrong-password':
+          return 'Parola este greșită.';
+        case 'permission-denied':
+          return 'Firestore rules blochează operația. Verifică regulile.';
+        default:
+          return error?.message || 'A apărut o eroare neașteptată.';
+      }
+    }
+  </script>
+
+  <!--
+    Firestore Rules recomandate pentru acest demo:
+
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        match /users/{userId} {
+          allow create, read, update: if request.auth != null && request.auth.uid == userId;
+          allow delete: if false;
+        }
+      }
+    }
+  -->
+</body>
+</html>
