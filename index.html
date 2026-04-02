@@ -456,6 +456,7 @@
           <p>Ai acces rapid la datele tale de pacient. Poți solicita o nouă programare folosind formularul dedicat.</p>
           <div class="cta-actions">
             <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum prin email</button>
+            <button class="secondary" id="whatsAppBookingBtn" style="width:auto; min-width:220px;">Programează-mă prin WhatsApp</button>
             
             <button class="secondary" id="logoutBtn">Logout</button>
           </div>
@@ -546,7 +547,8 @@
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { firebaseConfig } from './firebase-config.js';
 
-    const bookingEmail = 'identistmco@gmail.com';
+    const bookingEmail = 'adauga-aici-emailul-clinicii@example.com';
+    const whatsAppNumber = '40700000000';
 
     const defaultAppointments = [
       { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
@@ -602,11 +604,17 @@
     function renderAppointments(items = defaultAppointments) {
       const container = document.getElementById('appointmentsList');
       if (!container) return;
-      const sorted = items.slice().sort((a, b) => new Date(a.date.replace(' ', 'T')) - new Date(b.date.replace(' ', 'T')));
-      container.innerHTML = sorted.map(item => {
-        const notes = item.notes ? '<br>' + item.notes : '';
-        return '<div class="list-item"><strong>' + item.date + '</strong><br>' + item.service + ' - ' + item.doctor + notes + '</div>';
-      }).join('');
+
+      const sorted = items
+        .slice()
+        .sort((a, b) => new Date(String(a.date).replace(' ', 'T')) - new Date(String(b.date).replace(' ', 'T')));
+
+      container.innerHTML = sorted
+        .map(item => {
+          const notes = item.notes ? '<br>' + item.notes : '';
+          return '<div class="list-item"><strong>' + item.date + '</strong><br>' + item.service + ' - ' + item.doctor + notes + '</div>';
+        })
+        .join('');
     }
 
     function renderTreatmentPlan(items = defaultTreatmentPlan) {
@@ -617,11 +625,13 @@
       const paid = items.reduce((sum, item) => sum + (item.paid ? Number(item.price || 0) : 0), 0);
       const remaining = total - paid;
 
-      const rows = items.map(item => {
-        const paidClass = item.paid ? ' treatment-item-paid' : '';
-        const statusClass = item.paid ? 'status status-paid' : 'status';
-        return '<div class="list-item' + paidClass + '"><strong>' + item.name + '</strong><span class="' + statusClass + '">' + item.status + '</span><br><span class="price">' + item.price + ' RON</span></div>';
-      }).join('');
+      const rows = items
+        .map(item => {
+          const paidClass = item.paid ? ' treatment-item-paid' : '';
+          const statusClass = item.paid ? 'status status-paid' : 'status';
+          return '<div class="list-item' + paidClass + '"><strong>' + item.name + '</strong><span class="' + statusClass + '">' + item.status + '</span><br><span class="price">' + item.price + ' RON</span></div>';
+        })
+        .join('');
 
       const summary =
         '<div class="treatment-summary">' +
@@ -636,13 +646,86 @@
     function mapFirebaseError(error) {
       const code = error?.code || '';
       switch (code) {
-        case 'auth/email-already-in-use': return 'Există deja un cont cu acest email.';
-        case 'auth/invalid-email': return 'Email invalid.';
-        case 'auth/weak-password': return 'Parola este prea slabă. Folosește minimum 6 caractere.';
-        case 'auth/invalid-credential': return 'Email sau parolă greșită.';
-        case 'auth/network-request-failed': return 'Eroare de rețea. Încearcă din browserul principal, fără VPN sau adblock.';
-        default: return error?.message || 'A apărut o eroare neașteptată.';
+        case 'auth/email-already-in-use':
+          return 'Există deja un cont cu acest email.';
+        case 'auth/invalid-email':
+          return 'Email invalid.';
+        case 'auth/weak-password':
+          return 'Parola este prea slabă. Folosește minimum 6 caractere.';
+        case 'auth/invalid-credential':
+          return 'Email sau parolă greșită.';
+        case 'auth/network-request-failed':
+          return 'Eroare de rețea. Încearcă din browserul principal, fără VPN sau adblock.';
+        default:
+          return error?.message || 'A apărut o eroare neașteptată.';
       }
+    }
+
+    function buildBookingEmailBody() {
+      const profileName = document.getElementById('profileName')?.textContent || '-';
+      const profileEmail = document.getElementById('profileEmail')?.textContent || '-';
+      const bookingName = document.getElementById('bookingName')?.value.trim() || profileName;
+      const bookingPhone = document.getElementById('bookingPhone')?.value.trim() || '';
+      const bookingDate = document.getElementById('bookingDate')?.value || '';
+      const bookingService = document.getElementById('bookingService')?.value || '';
+      const bookingDoctor = document.getElementById('bookingDoctor')?.value || '';
+      const bookingNotes = document.getElementById('bookingNotes')?.value.trim() || '';
+
+      return (
+        'Bună ziua,
+
+' +
+        'Doresc o programare.
+
+' +
+        'Nume: ' + bookingName + '
+' +
+        'Email: ' + profileEmail + '
+' +
+        'Telefon: ' + bookingPhone + '
+' +
+        'Serviciu dorit: ' + bookingService + '
+' +
+        'Dată preferată: ' + bookingDate + '
+' +
+        'Medic preferat: ' + bookingDoctor + '
+' +
+        'Detalii: ' + bookingNotes + '
+
+' +
+        'Vă rog să mă contactați pentru confirmare.
+'
+      );
+    }
+
+    function buildWhatsAppBody() {
+      const profileName = document.getElementById('profileName')?.textContent || '-';
+      const profileEmail = document.getElementById('profileEmail')?.textContent || '-';
+      const bookingName = document.getElementById('bookingName')?.value.trim() || profileName;
+      const bookingPhone = document.getElementById('bookingPhone')?.value.trim() || '';
+      const bookingDate = document.getElementById('bookingDate')?.value || '';
+      const bookingService = document.getElementById('bookingService')?.value || '';
+      const bookingDoctor = document.getElementById('bookingDoctor')?.value || '';
+      const bookingNotes = document.getElementById('bookingNotes')?.value.trim() || '';
+
+      return (
+        'Bună ziua! Doresc o programare la dentist.
+
+' +
+        'Nume: ' + bookingName + '
+' +
+        'Email: ' + profileEmail + '
+' +
+        'Telefon: ' + bookingPhone + '
+' +
+        'Serviciu dorit: ' + bookingService + '
+' +
+        'Dată preferată: ' + bookingDate + '
+' +
+        'Medic preferat: ' + bookingDoctor + '
+' +
+        'Detalii: ' + bookingNotes
+      );
     }
 
     tabs.forEach(tab => {
@@ -681,6 +764,7 @@
           registerPanel?.classList.remove('active');
           loginPanel?.classList.remove('active');
           profilePanel?.classList.add('active');
+          bookingFormCard?.classList.remove('form-hidden');
 
           const profileName = document.getElementById('profileName');
           const profileEmail = document.getElementById('profileEmail');
@@ -765,30 +849,19 @@
         return;
       }
 
-      const profileName = document.getElementById('profileName')?.textContent || '-';
-      const profileEmail = document.getElementById('profileEmail')?.textContent || '-';
       const subject = encodeURIComponent('Cerere programare dentist');
-      const body = encodeURIComponent(
-        'Bună ziua,
-
-Doresc o programare.
-
-Nume: ' + profileName + '
-Email: ' + profileEmail + '
-Telefon: 
-Serviciu dorit: 
-Dată preferată: 
-Medic preferat: 
-
-Vă rog să mă contactați pentru confirmare.
-'
-      );
-
+      const body = encodeURIComponent(buildBookingEmailBody());
       window.location.href = 'mailto:' + bookingEmail + '?subject=' + subject + '&body=' + body;
     });
 
-    
-      clearMessage(bookingMessage);
+    document.getElementById('whatsAppBookingBtn')?.addEventListener('click', () => {
+      if (!auth?.currentUser) {
+        showMessage(profileMessage, 'Trebuie să fii logat pentru a deschide programarea prin WhatsApp.', 'error');
+        return;
+      }
+
+      const message = encodeURIComponent(buildWhatsAppBody());
+      window.open('https://wa.me/' + whatsAppNumber + '?text=' + message, '_blank');
     });
 
     document.getElementById('submitBookingBtn')?.addEventListener('click', () => {
