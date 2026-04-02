@@ -544,7 +544,7 @@
       signOut,
       updateProfile
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { firebaseConfig } from './firebase-config.js';
+    import { firebaseConfig } from './firebase-config.js';
 
     const defaultAppointments = [
       { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
@@ -577,11 +577,13 @@
     const bookingFormCard = document.getElementById('bookingFormCard');
 
     function showMessage(element, text, type) {
+      if (!element) return;
       element.textContent = text;
       element.className = 'message show ' + type;
     }
 
     function clearMessage(element) {
+      if (!element) return;
       element.textContent = '';
       element.className = 'message';
     }
@@ -597,6 +599,7 @@
 
     function renderAppointments(appointments) {
       const container = document.getElementById('appointmentsList');
+      if (!container) return;
       const items = (appointments && appointments.length ? appointments : defaultAppointments)
         .slice()
         .sort(function (a, b) {
@@ -611,9 +614,10 @@
 
     function renderTreatmentPlan(items) {
       const container = document.getElementById('treatmentPlanList');
+      if (!container) return;
       const data = items && items.length ? items : defaultTreatmentPlan;
-      const total = data.reduce(function (sum, item) { return sum + Number(item.price || 0); }, 0);
-      const paid = data.reduce(function (sum, item) { return sum + (item.paid ? Number(item.price || 0) : 0); }, 0);
+      const total = data.reduce((sum, item) => sum + Number(item.price || 0), 0);
+      const paid = data.reduce((sum, item) => sum + (item.paid ? Number(item.price || 0) : 0), 0);
       const remaining = total - paid;
 
       container.innerHTML = data.map(function (item) {
@@ -637,7 +641,6 @@
         case 'auth/invalid-credential': return 'Email sau parolă greșită.';
         case 'auth/user-not-found': return 'Utilizatorul nu există.';
         case 'auth/wrong-password': return 'Parola este greșită.';
-        case 'permission-denied': return 'Firestore rules blochează operația. Verifică regulile.';
         default: return error && error.message ? error.message : 'A apărut o eroare neașteptată.';
       }
     }
@@ -650,10 +653,8 @@
       });
     });
 
-    // ALWAYS render dummy data (chiar fără login)
     renderAppointments(defaultAppointments);
     renderTreatmentPlan(defaultTreatmentPlan);
-    });
 
     let auth = null;
 
@@ -681,9 +682,13 @@
           loginPanel.classList.remove('active');
           profilePanel.classList.add('active');
 
-                    document.getElementById('profileEmail').textContent = user.email || '-';
-          document.getElementById('profileName').textContent = user.displayName || '-';
-                    document.getElementById('bookingName').value = user.displayName || '';
+          const profileName = document.getElementById('profileName');
+          const profileEmail = document.getElementById('profileEmail');
+          const bookingName = document.getElementById('bookingName');
+
+          if (profileName) profileName.textContent = user.displayName || '-';
+          if (profileEmail) profileEmail.textContent = user.email || '-';
+          if (bookingName) bookingName.value = user.displayName || '';
 
           renderAppointments(defaultAppointments);
           renderTreatmentPlan(defaultTreatmentPlan);
@@ -691,11 +696,15 @@
       }
     } catch (error) {
       showMessage(registerMessage, 'Eroare la inițializare: ' + mapFirebaseError(error), 'error');
+      console.error(error);
     }
 
     document.getElementById('registerBtn').addEventListener('click', async function () {
       clearMessage(registerMessage);
-      if (!auth) return;
+      if (!auth) {
+        showMessage(registerMessage, 'Firebase Auth nu este inițializat.', 'error');
+        return;
+      }
 
       const name = document.getElementById('registerName').value.trim();
       const email = document.getElementById('registerEmail').value.trim();
@@ -712,12 +721,16 @@
         showMessage(registerMessage, 'Cont creat cu succes.', 'success');
       } catch (error) {
         showMessage(registerMessage, mapFirebaseError(error), 'error');
+        console.error(error);
       }
     });
 
     document.getElementById('loginBtn').addEventListener('click', async function () {
       clearMessage(loginMessage);
-      if (!auth) return;
+      if (!auth) {
+        showMessage(loginMessage, 'Firebase Auth nu este inițializat.', 'error');
+        return;
+      }
 
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
@@ -732,6 +745,7 @@
         showMessage(loginMessage, 'Autentificare reușită.', 'success');
       } catch (error) {
         showMessage(loginMessage, mapFirebaseError(error), 'error');
+        console.error(error);
       }
     });
 
@@ -741,6 +755,7 @@
         await signOut(auth);
       } catch (error) {
         showMessage(profileMessage, mapFirebaseError(error), 'error');
+        console.error(error);
       }
     });
 
@@ -754,9 +769,12 @@
       clearMessage(bookingMessage);
     });
 
-    document.getElementById('submitBookingBtn').addEventListener('click', async function () {
+    document.getElementById('submitBookingBtn').addEventListener('click', function () {
       clearMessage(bookingMessage);
-      if (!auth || !auth.currentUser) return;
+      if (!auth || !auth.currentUser) {
+        showMessage(bookingMessage, 'Trebuie să fii logat pentru a adăuga o programare.', 'error');
+        return;
+      }
 
       const bookingName = document.getElementById('bookingName').value.trim();
       const bookingPhone = document.getElementById('bookingPhone').value.trim();
@@ -770,23 +788,18 @@
         return;
       }
 
-      const newAppointment = {
+      defaultAppointments.push({
         date: bookingDate,
         doctor: bookingDoctor,
         service: bookingService,
         notes: bookingNotes || ('Telefon pacient: ' + bookingPhone)
-      };
+      });
 
-      try {
-        defaultAppointments.push(newAppointment);
-        renderAppointments(defaultAppointments);
-        showMessage(bookingMessage, 'Cererea de programare a fost adăugată local în interfață.', 'success');
-        document.getElementById('bookingPhone').value = '';
-        document.getElementById('bookingDate').value = '';
-        document.getElementById('bookingNotes').value = '';
-      } catch (error) {
-        showMessage(bookingMessage, mapFirebaseError(error), 'error');
-      }
+      renderAppointments(defaultAppointments);
+      showMessage(bookingMessage, 'Cererea de programare a fost adăugată local în interfață.', 'success');
+      document.getElementById('bookingPhone').value = '';
+      document.getElementById('bookingDate').value = '';
+      document.getElementById('bookingNotes').value = '';
     });
   </script>
 </body>
