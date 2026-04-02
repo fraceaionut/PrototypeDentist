@@ -239,6 +239,21 @@
         <div class="profile-row"><strong>Email:</strong> <span id="profileEmail">-</span></div>
         <div class="profile-row"><strong>Creat la:</strong> <span id="profileCreatedAt">-</span></div>
       </div>
+
+      <div class="profile-card">
+        <h3>Programări la dentist</h3>
+        <div id="appointmentsList">
+          <div class="profile-row">Nu există programări momentan.</div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3>Plan de tratament</h3>
+        <div id="treatmentPlanList">
+          <div class="profile-row">Nu există tratamente adăugate momentan.</div>
+        </div>
+      </div>
+
       <button class="secondary" id="logoutBtn">Logout</button>
     </section>
 
@@ -361,8 +376,13 @@ const firebaseConfig = {
             document.getElementById('profileCreatedAt').textContent = createdAt
               ? createdAt.toLocaleString('ro-RO')
               : '-';
+
+            renderAppointments(data.appointments || []);
+            renderTreatmentPlan(data.treatmentPlan || []);
           } else {
             document.getElementById('profileCreatedAt').textContent = '-';
+            renderAppointments([]);
+            renderTreatmentPlan([]);
           }
         } catch (error) {
           showMessage(profileMessage, mapFirebaseError(error), 'error');
@@ -391,7 +411,56 @@ const firebaseConfig = {
           uid: credential.user.uid,
           name,
           email,
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
+          appointments: [
+            {
+              date: '2026-04-10 09:30',
+              doctor: 'Dr. Popescu',
+              service: 'Consultație generală'
+            },
+            {
+              date: '2026-04-18 11:00',
+              doctor: 'Dr. Ionescu',
+              service: 'Igienizare dentară'
+            },
+            {
+              date: '2026-04-25 14:00',
+              doctor: 'Dr. Marinescu',
+              service: 'Radiografie dentară'
+            },
+            {
+              date: '2026-05-02 10:15',
+              doctor: 'Dr. Georgescu',
+              service: 'Plombă molar'
+            }
+          ],
+          treatmentPlan: [
+            {
+              name: 'Consultație inițială',
+              status: 'Finalizat',
+              price: '200 RON'
+            },
+            {
+              name: 'Detartraj și periaj',
+              status: 'Planificat',
+              price: '350 RON'
+            },
+            {
+              name: 'Obturație carie molar',
+              status: 'În așteptare',
+              price: '450 RON'
+            },
+            {
+              name: 'Tratament canal',
+              status: 'Planificat',
+              price: '900 RON'
+            },
+            {
+              name: 'Coroană ceramică',
+              status: 'În așteptare',
+              price: '1500 RON'
+            }
+          ]
         });
 
         showMessage(registerMessage, 'Cont creat cu succes.', 'success');
@@ -429,6 +498,38 @@ const firebaseConfig = {
         showMessage(profileMessage, mapFirebaseError(error), 'error');
       }
     });
+
+    function renderAppointments(appointments) {
+      const container = document.getElementById('appointmentsList');
+
+      if (!appointments.length) {
+        container.innerHTML = '<div class="profile-row">Nu există programări momentan.</div>';
+        return;
+      }
+
+      container.innerHTML = appointments.map(item => `
+        <div class="profile-row">
+          <strong>${item.date}</strong><br>
+          ${item.service} - ${item.doctor}
+        </div>
+      `).join('');
+    }
+
+    function renderTreatmentPlan(items) {
+      const container = document.getElementById('treatmentPlanList');
+
+      if (!items.length) {
+        container.innerHTML = '<div class="profile-row">Nu există tratamente adăugate momentan.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="profile-row">
+          <strong>${item.name}</strong><br>
+          Status: ${item.status} | Cost: ${item.price}
+        </div>
+      `).join('');
+    }
 
     function mapFirebaseError(error) {
       const code = error?.code || '';
