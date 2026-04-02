@@ -860,7 +860,8 @@
         return;
       }
 
-      const message = encodeURIComponent(buildWhatsAppBody());
+      const safeMessage = buildWhatsAppBody();
+      const message = encodeURIComponent(String(safeMessage));
       window.open('https://wa.me/' + whatsAppNumber + '?text=' + message, '_blank');
     });
 
