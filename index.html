@@ -546,6 +546,8 @@
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { firebaseConfig } from './firebase-config.js';
 
+    const bookingEmail = 'adauga-aici-emailul-clinicii@example.com';
+
     const defaultAppointments = [
       { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
       { date: '2026-04-18 11:00', doctor: 'Dr. Ionescu', service: 'Igienizare dentară' },
@@ -575,9 +577,8 @@
     const loginPanel = document.getElementById('loginPanel');
     const profilePanel = document.getElementById('profilePanel');
     const bookingFormCard = document.getElementById('bookingFormCard');
-    const bookingEmail = 'identistmco@gmail.com';
 
-    function showMessage(element, text, type) {
+    function showMessage(element, text, type = 'error') {
       if (!element) return;
       element.textContent = text;
       element.className = 'message show ' + type;
@@ -594,68 +595,66 @@
       tabs.forEach(tab => tab.classList.remove('active'));
       const panel = document.getElementById(panelId);
       if (panel) panel.classList.add('active');
-      const activeTab = Array.from(tabs).find(t => t.dataset.target === panelId);
+      const activeTab = Array.from(tabs).find(tab => tab.dataset.target === panelId);
       if (activeTab) activeTab.classList.add('active');
     }
 
-    function renderAppointments(appointments) {
+    function renderAppointments(items = defaultAppointments) {
       const container = document.getElementById('appointmentsList');
       if (!container) return;
-      const items = (appointments && appointments.length ? appointments : defaultAppointments)
-        .slice()
-        .sort(function (a, b) {
-          return new Date(a.date.replace(' ', 'T')) - new Date(b.date.replace(' ', 'T'));
-        });
-
-      container.innerHTML = items.map(function (item) {
+      const sorted = items.slice().sort((a, b) => new Date(a.date.replace(' ', 'T')) - new Date(b.date.replace(' ', 'T')));
+      container.innerHTML = sorted.map(item => {
         const notes = item.notes ? '<br>' + item.notes : '';
         return '<div class="list-item"><strong>' + item.date + '</strong><br>' + item.service + ' - ' + item.doctor + notes + '</div>';
       }).join('');
     }
 
-    function renderTreatmentPlan(items) {
+    function renderTreatmentPlan(items = defaultTreatmentPlan) {
       const container = document.getElementById('treatmentPlanList');
       if (!container) return;
-      const data = items && items.length ? items : defaultTreatmentPlan;
-      const total = data.reduce((sum, item) => sum + Number(item.price || 0), 0);
-      const paid = data.reduce((sum, item) => sum + (item.paid ? Number(item.price || 0) : 0), 0);
+
+      const total = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
+      const paid = items.reduce((sum, item) => sum + (item.paid ? Number(item.price || 0) : 0), 0);
       const remaining = total - paid;
 
-      container.innerHTML = data.map(function (item) {
+      const rows = items.map(item => {
         const paidClass = item.paid ? ' treatment-item-paid' : '';
         const statusClass = item.paid ? 'status status-paid' : 'status';
         return '<div class="list-item' + paidClass + '"><strong>' + item.name + '</strong><span class="' + statusClass + '">' + item.status + '</span><br><span class="price">' + item.price + ' RON</span></div>';
-      }).join('') +
-      '<div class="treatment-summary">' +
-        '<div class="summary-row"><span>Total achitat</span><strong>' + paid + ' RON</strong></div>' +
-        '<div class="summary-row"><span>Total plan tratament</span><strong>' + total + ' RON</strong></div>' +
-        '<div class="summary-row total remaining"><span>Rest de plată</span><strong>' + remaining + ' RON</strong></div>' +
-      '</div>';
+      }).join('');
+
+      const summary =
+        '<div class="treatment-summary">' +
+          '<div class="summary-row"><span>Total achitat</span><strong>' + paid + ' RON</strong></div>' +
+          '<div class="summary-row"><span>Total plan tratament</span><strong>' + total + ' RON</strong></div>' +
+          '<div class="summary-row total remaining"><span>Rest de plată</span><strong>' + remaining + ' RON</strong></div>' +
+        '</div>';
+
+      container.innerHTML = rows + summary;
     }
 
     function mapFirebaseError(error) {
-      const code = error && error.code ? error.code : '';
+      const code = error?.code || '';
       switch (code) {
         case 'auth/email-already-in-use': return 'Există deja un cont cu acest email.';
         case 'auth/invalid-email': return 'Email invalid.';
         case 'auth/weak-password': return 'Parola este prea slabă. Folosește minimum 6 caractere.';
         case 'auth/invalid-credential': return 'Email sau parolă greșită.';
-        case 'auth/user-not-found': return 'Utilizatorul nu există.';
-        case 'auth/wrong-password': return 'Parola este greșită.';
-        default: return error && error.message ? error.message : 'A apărut o eroare neașteptată.';
+        case 'auth/network-request-failed': return 'Eroare de rețea. Încearcă din browserul principal, fără VPN sau adblock.';
+        default: return error?.message || 'A apărut o eroare neașteptată.';
       }
     }
 
     tabs.forEach(tab => {
-      tab.addEventListener('click', function () {
+      tab.addEventListener('click', () => {
         clearMessage(registerMessage);
         clearMessage(loginMessage);
         switchTo(tab.dataset.target);
       });
     });
 
-    renderAppointments(defaultAppointments);
-    renderTreatmentPlan(defaultTreatmentPlan);
+    renderAppointments();
+    renderTreatmentPlan();
 
     let auth = null;
 
@@ -666,22 +665,22 @@
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
 
-        onAuthStateChanged(auth, function (user) {
+        onAuthStateChanged(auth, user => {
           clearMessage(profileMessage);
           clearMessage(bookingMessage);
 
           if (!user) {
-            guestTabs.classList.remove('hidden');
-            profilePanel.classList.remove('active');
-            bookingFormCard.classList.add('form-hidden');
+            guestTabs?.classList.remove('hidden');
+            profilePanel?.classList.remove('active');
+            bookingFormCard?.classList.add('form-hidden');
             switchTo('registerPanel');
             return;
           }
 
-          guestTabs.classList.add('hidden');
-          registerPanel.classList.remove('active');
-          loginPanel.classList.remove('active');
-          profilePanel.classList.add('active');
+          guestTabs?.classList.add('hidden');
+          registerPanel?.classList.remove('active');
+          loginPanel?.classList.remove('active');
+          profilePanel?.classList.add('active');
 
           const profileName = document.getElementById('profileName');
           const profileEmail = document.getElementById('profileEmail');
@@ -691,8 +690,8 @@
           if (profileEmail) profileEmail.textContent = user.email || '-';
           if (bookingName) bookingName.value = user.displayName || '';
 
-          renderAppointments(defaultAppointments);
-          renderTreatmentPlan(defaultTreatmentPlan);
+          renderAppointments();
+          renderTreatmentPlan();
         });
       }
     } catch (error) {
@@ -700,16 +699,16 @@
       console.error(error);
     }
 
-    document.getElementById('registerBtn').addEventListener('click', async function () {
+    document.getElementById('registerBtn')?.addEventListener('click', async () => {
       clearMessage(registerMessage);
       if (!auth) {
         showMessage(registerMessage, 'Firebase Auth nu este inițializat.', 'error');
         return;
       }
 
-      const name = document.getElementById('registerName').value.trim();
-      const email = document.getElementById('registerEmail').value.trim();
-      const password = document.getElementById('registerPassword').value;
+      const name = document.getElementById('registerName')?.value.trim();
+      const email = document.getElementById('registerEmail')?.value.trim();
+      const password = document.getElementById('registerPassword')?.value || '';
 
       if (!name || !email || !password) {
         showMessage(registerMessage, 'Completează toate câmpurile.', 'error');
@@ -726,15 +725,15 @@
       }
     });
 
-    document.getElementById('loginBtn').addEventListener('click', async function () {
+    document.getElementById('loginBtn')?.addEventListener('click', async () => {
       clearMessage(loginMessage);
       if (!auth) {
         showMessage(loginMessage, 'Firebase Auth nu este inițializat.', 'error');
         return;
       }
 
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
+      const email = document.getElementById('loginEmail')?.value.trim();
+      const password = document.getElementById('loginPassword')?.value || '';
 
       if (!email || !password) {
         showMessage(loginMessage, 'Introdu email și parolă.', 'error');
@@ -750,7 +749,7 @@
       }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', async function () {
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
       if (!auth) return;
       try {
         await signOut(auth);
@@ -760,53 +759,40 @@
       }
     });
 
-    document.getElementById('showBookingFormBtn').addEventListener('click', function () {
-      if (!auth || !auth.currentUser) {
+    document.getElementById('showBookingFormBtn')?.addEventListener('click', () => {
+      if (!auth?.currentUser) {
         showMessage(profileMessage, 'Trebuie să fii logat pentru a trimite emailul de programare.', 'error');
         return;
       }
 
-      const profileName = document.getElementById('profileName') ? document.getElementById('profileName').textContent : '';
-      const profileEmail = document.getElementById('profileEmail') ? document.getElementById('profileEmail').textContent : '';
+      const profileName = document.getElementById('profileName')?.textContent || '-';
+      const profileEmail = document.getElementById('profileEmail')?.textContent || '-';
       const subject = encodeURIComponent('Cerere programare dentist');
       const body = encodeURIComponent(
-        'Bună ziua,
-
-Doresc o programare.
-
-Nume: ' + (profileName || '-') + '
-Email: ' + (profileEmail || '-') + '
-Telefon: 
-Serviciu dorit: 
-Dată preferată: 
-Medic preferat: 
-
-Vă rog să mă contactați pentru confirmare.
-'
+        'Bună ziua,\n\nDoresc o programare.\n\nNume: ' + profileName + '\nEmail: ' + profileEmail + '\nTelefon: \nServiciu dorit: \nDată preferată: \nMedic preferat: \n\nVă rog să mă contactați pentru confirmare.\n'
       );
 
       window.location.href = 'mailto:' + bookingEmail + '?subject=' + subject + '&body=' + body;
     });
-    });
 
-    document.getElementById('hideBookingFormBtn').addEventListener('click', function () {
-      bookingFormCard.classList.add('form-hidden');
+    document.getElementById('hideBookingFormBtn')?.addEventListener('click', () => {
+      bookingFormCard?.classList.add('form-hidden');
       clearMessage(bookingMessage);
     });
 
-    document.getElementById('submitBookingBtn').addEventListener('click', function () {
+    document.getElementById('submitBookingBtn')?.addEventListener('click', () => {
       clearMessage(bookingMessage);
-      if (!auth || !auth.currentUser) {
+      if (!auth?.currentUser) {
         showMessage(bookingMessage, 'Trebuie să fii logat pentru a adăuga o programare.', 'error');
         return;
       }
 
-      const bookingName = document.getElementById('bookingName').value.trim();
-      const bookingPhone = document.getElementById('bookingPhone').value.trim();
-      const bookingDate = document.getElementById('bookingDate').value;
-      const bookingService = document.getElementById('bookingService').value;
-      const bookingDoctor = document.getElementById('bookingDoctor').value;
-      const bookingNotes = document.getElementById('bookingNotes').value.trim();
+      const bookingName = document.getElementById('bookingName')?.value.trim();
+      const bookingPhone = document.getElementById('bookingPhone')?.value.trim();
+      const bookingDate = document.getElementById('bookingDate')?.value;
+      const bookingService = document.getElementById('bookingService')?.value || '';
+      const bookingDoctor = document.getElementById('bookingDoctor')?.value || '';
+      const bookingNotes = document.getElementById('bookingNotes')?.value.trim() || '';
 
       if (!bookingName || !bookingPhone || !bookingDate) {
         showMessage(bookingMessage, 'Completează numele, telefonul și data dorită.', 'error');
@@ -820,11 +806,15 @@ Vă rog să mă contactați pentru confirmare.
         notes: bookingNotes || ('Telefon pacient: ' + bookingPhone)
       });
 
-      renderAppointments(defaultAppointments);
+      renderAppointments();
       showMessage(bookingMessage, 'Cererea de programare a fost adăugată local în interfață.', 'success');
-      document.getElementById('bookingPhone').value = '';
-      document.getElementById('bookingDate').value = '';
-      document.getElementById('bookingNotes').value = '';
+
+      const phone = document.getElementById('bookingPhone');
+      const date = document.getElementById('bookingDate');
+      const notes = document.getElementById('bookingNotes');
+      if (phone) phone.value = '';
+      if (date) date.value = '';
+      if (notes) notes.value = '';
     });
   </script>
 </body>
