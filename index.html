@@ -456,7 +456,7 @@
           <p>Ai acces rapid la datele tale de pacient. Poți solicita o nouă programare folosind formularul dedicat.</p>
           <div class="cta-actions">
             <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum prin email</button>
-            <button class="ghost" id="hideBookingFormBtn">Ascunde formularul</button>
+            
             <button class="secondary" id="logoutBtn">Logout</button>
           </div>
         </div>
@@ -546,7 +546,7 @@
     } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { firebaseConfig } from './firebase-config.js';
 
-    const bookingEmail = 'adauga-aici-emailul-clinicii@example.com';
+    const bookingEmail = 'identistmco@gmail.com';
 
     const defaultAppointments = [
       { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
@@ -769,14 +769,25 @@
       const profileEmail = document.getElementById('profileEmail')?.textContent || '-';
       const subject = encodeURIComponent('Cerere programare dentist');
       const body = encodeURIComponent(
-        'Bună ziua,\n\nDoresc o programare.\n\nNume: ' + profileName + '\nEmail: ' + profileEmail + '\nTelefon: \nServiciu dorit: \nDată preferată: \nMedic preferat: \n\nVă rog să mă contactați pentru confirmare.\n'
+        'Bună ziua,
+
+Doresc o programare.
+
+Nume: ' + profileName + '
+Email: ' + profileEmail + '
+Telefon: 
+Serviciu dorit: 
+Dată preferată: 
+Medic preferat: 
+
+Vă rog să mă contactați pentru confirmare.
+'
       );
 
       window.location.href = 'mailto:' + bookingEmail + '?subject=' + subject + '&body=' + body;
     });
 
-    document.getElementById('hideBookingFormBtn')?.addEventListener('click', () => {
-      bookingFormCard?.classList.add('form-hidden');
+    
       clearMessage(bookingMessage);
     });
 
