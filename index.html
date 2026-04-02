@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal pacient iDentist</title>
+  <title>Portal pacient</title>
   <style>
     :root {
-      --bg: #eef8f8;
-      --bg-soft: #f7fcfc;
+      --bg: #f4fbfb;
       --card: #ffffff;
-      --text: #16333a;
+      --text: #17343a;
       --muted: #6b8a91;
       --accent: #58c6d0;
       --accent-dark: #2fa5b0;
@@ -37,7 +36,7 @@
       width: 100%;
       max-width: 1100px;
       margin: 0 auto;
-      background: rgba(255,255,255,0.96);
+      background: rgba(255,255,255,0.98);
       border: 1px solid var(--border);
       border-radius: 30px;
       box-shadow: var(--shadow);
@@ -68,7 +67,6 @@
       margin: 0 0 10px;
       font-size: 38px;
       line-height: 1.1;
-      color: #17343a;
     }
 
     .header p {
@@ -84,9 +82,6 @@
       color: white;
       border-radius: 24px;
       padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       min-height: 220px;
     }
 
@@ -126,10 +121,10 @@
       display: flex;
       gap: 10px;
       margin-bottom: 24px;
+      flex-wrap: wrap;
     }
 
     .tab {
-      flex: 0 0 auto;
       min-width: 140px;
       border: 1px solid var(--border);
       background: white;
@@ -138,7 +133,6 @@
       border-radius: 14px;
       cursor: pointer;
       font-weight: 700;
-      transition: 0.2s ease;
     }
 
     .tab.active,
@@ -151,7 +145,9 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    .auth-layout {
+    .auth-layout,
+    .profile-grid,
+    .booking-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
@@ -165,12 +161,14 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.04);
     }
 
-    .card h3 {
+    .card h3,
+    .section-title {
       margin: 0 0 10px;
       font-size: 24px;
     }
 
-    .card-subtitle {
+    .card-subtitle,
+    .muted {
       margin: 0 0 18px;
       color: var(--muted);
       line-height: 1.6;
@@ -215,8 +213,558 @@
       font-size: 15px;
       font-weight: 700;
       padding: 14px 18px;
-      transition: 0.2s ease;
     }
 
     button.primary {
       width: 100%;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: #1e9ba7;
+      color: white;
+    }
+
+    button.ghost {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .message {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .message.show { display: block; }
+    .message.error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid #f1c7c7;
+    }
+    .message.success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid #bfe8cf;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, #f6fdfe 0%, #e3f6f8 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .cta-box p {
+      margin: 8px 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .profile-row,
+    .list-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #edf5f5;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .profile-row:last-child,
+    .list-item:last-child { border-bottom: none; }
+
+    .profile-row strong,
+    .list-item strong { color: var(--text); }
+
+    .price {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #edf7f8;
+      color: #417a82;
+    }
+
+    .form-hidden { display: none; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .hero,
+      .auth-layout,
+      .profile-grid,
+      .booking-grid {
+        grid-template-columns: 1fr;
+      }
+      .content,
+      .hero { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="header">
+        <div class="hero-badge">Portal pacient</div>
+        <h1>Zâmbet sănătos, programări simple și plan de tratament clar.</h1>
+        <p>Interfață curată, luminoasă, cu accente turcoaz și carduri aerisite pentru un portal de clinică dentară.</p>
+      </div>
+      <div class="hero-side">
+        <h3>Clinică dentară modernă</h3>
+        <p>Programări rapide, informații centralizate și o experiență digitală simplă pentru pacienți.</p>
+        <div class="quick-info">
+          <div><strong>Program</strong><br>L-V 09:00-18:00</div>
+          <div><strong>Locație</strong><br>Timișoara</div>
+          <div><strong>Contact</strong><br>Portal pacient</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+      <div class="tabs" id="guestTabs">
+        <button class="tab active" data-target="registerPanel">Register</button>
+        <button class="tab" data-target="loginPanel">Login</button>
+      </div>
+
+      <section class="panel active" id="registerPanel">
+        <div class="auth-layout">
+          <div class="card">
+            <h3>Creează cont</h3>
+            <p class="card-subtitle">Înregistrează-te ca să vezi programările și planul de tratament în contul tău.</p>
+            <div class="field">
+              <label for="registerName">Nume</label>
+              <input id="registerName" type="text" placeholder="Ion Popescu" />
+            </div>
+            <div class="field">
+              <label for="registerEmail">Email</label>
+              <input id="registerEmail" type="email" placeholder="ion@example.com" />
+            </div>
+            <div class="field">
+              <label for="registerPassword">Parolă</label>
+              <input id="registerPassword" type="password" placeholder="Minimum 6 caractere" />
+            </div>
+            <button class="primary" id="registerBtn">Creează cont</button>
+            <div class="message" id="registerMessage"></div>
+          </div>
+          <div class="card">
+            <h3>Bine ai venit</h3>
+            <p class="card-subtitle">Portalul afișează programări, planul de tratament și un formular simplu pentru o nouă programare.</p>
+            <div class="list-item"><strong>Autentificare sigură</strong><br>Contul este gestionat prin Firebase Authentication.</div>
+            <div class="list-item"><strong>Plan de tratament</strong><br>Poți vedea intervențiile și costurile estimate.</div>
+            <div class="list-item"><strong>Programare rapidă</strong><br>Ai un formular simplu pentru a cere o nouă programare.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="loginPanel">
+        <div class="auth-layout">
+          <div class="card">
+            <h3>Autentificare</h3>
+            <p class="card-subtitle">Intră în cont pentru a-ți vedea datele și programările viitoare.</p>
+            <div class="field">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" placeholder="ion@example.com" />
+            </div>
+            <div class="field">
+              <label for="loginPassword">Parolă</label>
+              <input id="loginPassword" type="password" placeholder="Parola ta" />
+            </div>
+            <button class="primary" id="loginBtn">Loghează-te</button>
+            <div class="message" id="loginMessage"></div>
+          </div>
+          <div class="card">
+            <h3>Ce găsești în portal</h3>
+            <p class="card-subtitle">După login vei vedea imediat secțiunile importante pentru pacient.</p>
+            <div class="list-item"><strong>Programările la dentist</strong><br>Lista vizitelor planificate și detalii despre medic.</div>
+            <div class="list-item"><strong>Planul de tratament</strong><br>Status și preț pentru fiecare etapă.</div>
+            <div class="list-item"><strong>Buton rapid de programare</strong><br>Poți cere o nouă programare direct din cont.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="profilePanel">
+        <div class="message" id="profileMessage"></div>
+
+        <div class="cta-box">
+          <h2 class="section-title">Bun venit în contul tău</h2>
+          <p>Ai acces rapid la datele tale de pacient. Poți solicita o nouă programare folosind formularul dedicat.</p>
+          <div class="cta-actions">
+            <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum</button>
+            <button class="ghost" id="hideBookingFormBtn">Ascunde formularul</button>
+            <button class="secondary" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+
+        <div class="card form-hidden" id="bookingFormCard">
+          <h3>Formular programare</h3>
+          <p class="card-subtitle">Completează câteva detalii și cererea ta de programare va fi salvată în cont.</p>
+          <div class="booking-grid">
+            <div>
+              <div class="field">
+                <label for="bookingName">Nume complet</label>
+                <input id="bookingName" type="text" placeholder="Ion Popescu" />
+              </div>
+              <div class="field">
+                <label for="bookingPhone">Telefon</label>
+                <input id="bookingPhone" type="text" placeholder="07xx xxx xxx" />
+              </div>
+              <div class="field">
+                <label for="bookingDate">Data dorită</label>
+                <input id="bookingDate" type="date" />
+              </div>
+            </div>
+            <div>
+              <div class="field">
+                <label for="bookingService">Serviciu dorit</label>
+                <select id="bookingService">
+                  <option>Consultație generală</option>
+                  <option>Igienizare dentară</option>
+                  <option>Radiografie dentară</option>
+                  <option>Plombă / obturație</option>
+                  <option>Tratament canal</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="bookingDoctor">Medic preferat</label>
+                <select id="bookingDoctor">
+                  <option>Dr. Popescu</option>
+                  <option>Dr. Ionescu</option>
+                  <option>Dr. Marinescu</option>
+                  <option>Dr. Georgescu</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="bookingNotes">Detalii suplimentare</label>
+                <textarea id="bookingNotes" placeholder="Descrie pe scurt problema sau preferințele tale."></textarea>
+              </div>
+            </div>
+          </div>
+          <button class="primary" id="submitBookingBtn">Trimite cererea</button>
+          <div class="message" id="bookingMessage"></div>
+        </div>
+
+        <div class="profile-grid">
+          <div>
+            <div class="card">
+              <h3>Profil utilizator</h3>
+              <div class="profile-row"><strong>UID:</strong> <span id="profileUid">-</span></div>
+              <div class="profile-row"><strong>Nume:</strong> <span id="profileName">-</span></div>
+              <div class="profile-row"><strong>Email:</strong> <span id="profileEmail">-</span></div>
+              <div class="profile-row"><strong>Creat la:</strong> <span id="profileCreatedAt">-</span></div>
+            </div>
+
+            <div class="card" style="margin-top:18px;">
+              <h3>Programări la dentist</h3>
+              <div id="appointmentsList"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <h3>Plan de tratament</h3>
+              <div id="treatmentPlanList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut,
+      updateProfile
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      updateDoc,
+      serverTimestamp,
+      arrayUnion
+    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+    import { firebaseConfig } from './firebase-config.js';
+
+    const defaultAppointments = [
+      { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
+      { date: '2026-04-18 11:00', doctor: 'Dr. Ionescu', service: 'Igienizare dentară' },
+      { date: '2026-04-25 14:00', doctor: 'Dr. Marinescu', service: 'Radiografie dentară' },
+      { date: '2026-05-02 10:15', doctor: 'Dr. Georgescu', service: 'Plombă molar', notes: 'Control la 2 săptămâni după intervenție.' }
+    ];
+
+    const defaultTreatmentPlan = [
+      { name: 'Consultație inițială', status: 'Finalizat', price: '200 RON' },
+      { name: 'Detartraj și periaj', status: 'Planificat', price: '350 RON' },
+      { name: 'Obturație carie molar', status: 'În așteptare', price: '450 RON' },
+      { name: 'Tratament canal', status: 'Planificat', price: '900 RON' },
+      { name: 'Coroană ceramică', status: 'În așteptare', price: '1500 RON' }
+    ];
+
+    const registerMessage = document.getElementById('registerMessage');
+    const loginMessage = document.getElementById('loginMessage');
+    const profileMessage = document.getElementById('profileMessage');
+    const bookingMessage = document.getElementById('bookingMessage');
+
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    const guestTabs = document.getElementById('guestTabs');
+    const registerPanel = document.getElementById('registerPanel');
+    const loginPanel = document.getElementById('loginPanel');
+    const profilePanel = document.getElementById('profilePanel');
+    const bookingFormCard = document.getElementById('bookingFormCard');
+
+    function showMessage(element, text, type) {
+      element.textContent = text;
+      element.className = 'message show ' + type;
+    }
+
+    function clearMessage(element) {
+      element.textContent = '';
+      element.className = 'message';
+    }
+
+    function switchTo(panelId) {
+      panels.forEach(panel => panel.classList.remove('active'));
+      tabs.forEach(tab => tab.classList.remove('active'));
+      const panel = document.getElementById(panelId);
+      if (panel) panel.classList.add('active');
+      const activeTab = Array.from(tabs).find(t => t.dataset.target === panelId);
+      if (activeTab) activeTab.classList.add('active');
+    }
+
+    function renderAppointments(appointments) {
+      const container = document.getElementById('appointmentsList');
+      const items = appointments && appointments.length ? appointments : defaultAppointments;
+      container.innerHTML = items.map(item => {
+        const notes = item.notes ? '<br>' + item.notes : '';
+        return '<div class="list-item"><strong>' + item.date + '</strong><br>' + item.service + ' - ' + item.doctor + notes + '</div>';
+      }).join('');
+    }
+
+    function renderTreatmentPlan(items) {
+      const container = document.getElementById('treatmentPlanList');
+      const data = items && items.length ? items : defaultTreatmentPlan;
+      container.innerHTML = data.map(item => {
+        return '<div class="list-item"><strong>' + item.name + '</strong><span class="status">' + item.status + '</span><br><span class="price">' + item.price + '</span></div>';
+      }).join('');
+    }
+
+    function mapFirebaseError(error) {
+      const code = error && error.code ? error.code : '';
+      switch (code) {
+        case 'auth/email-already-in-use': return 'Există deja un cont cu acest email.';
+        case 'auth/invalid-email': return 'Email invalid.';
+        case 'auth/weak-password': return 'Parola este prea slabă. Folosește minimum 6 caractere.';
+        case 'auth/invalid-credential': return 'Email sau parolă greșită.';
+        case 'auth/user-not-found': return 'Utilizatorul nu există.';
+        case 'auth/wrong-password': return 'Parola este greșită.';
+        case 'permission-denied': return 'Firestore rules blochează operația. Verifică regulile.';
+        default: return error && error.message ? error.message : 'A apărut o eroare neașteptată.';
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function () {
+        clearMessage(registerMessage);
+        clearMessage(loginMessage);
+        switchTo(tab.dataset.target);
+      });
+    });
+
+    let auth = null;
+    let db = null;
+
+    try {
+      if (!firebaseConfig || !firebaseConfig.projectId) {
+        showMessage(registerMessage, 'Completează firebase-config.js înainte să folosești aplicația.', 'error');
+      } else {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        onAuthStateChanged(auth, async function (user) {
+          clearMessage(profileMessage);
+          clearMessage(bookingMessage);
+
+          if (!user) {
+            guestTabs.classList.remove('hidden');
+            profilePanel.classList.remove('active');
+            bookingFormCard.classList.add('form-hidden');
+            switchTo('registerPanel');
+            return;
+          }
+
+          guestTabs.classList.add('hidden');
+          registerPanel.classList.remove('active');
+          loginPanel.classList.remove('active');
+          profilePanel.classList.add('active');
+
+          document.getElementById('profileUid').textContent = user.uid || '-';
+          document.getElementById('profileEmail').textContent = user.email || '-';
+          document.getElementById('profileName').textContent = user.displayName || '-';
+          document.getElementById('bookingName').value = user.displayName || '';
+
+          try {
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const data = userSnap.data();
+              document.getElementById('profileName').textContent = data.name || user.displayName || '-';
+              const createdAt = data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : null;
+              document.getElementById('profileCreatedAt').textContent = createdAt ? createdAt.toLocaleString('ro-RO') : '-';
+              renderAppointments(data.appointments || defaultAppointments);
+              renderTreatmentPlan(data.treatmentPlan || defaultTreatmentPlan);
+            } else {
+              document.getElementById('profileCreatedAt').textContent = '-';
+              renderAppointments(defaultAppointments);
+              renderTreatmentPlan(defaultTreatmentPlan);
+            }
+          } catch (error) {
+            showMessage(profileMessage, mapFirebaseError(error), 'error');
+          }
+        });
+      }
+    } catch (error) {
+      showMessage(registerMessage, 'Eroare la inițializare: ' + mapFirebaseError(error), 'error');
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', async function () {
+      clearMessage(registerMessage);
+      if (!auth || !db) return;
+
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      if (!name || !email || !password) {
+        showMessage(registerMessage, 'Completează toate câmpurile.', 'error');
+        return;
+      }
+
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(credential.user, { displayName: name });
+        await setDoc(doc(db, 'users', credential.user.uid), {
+          uid: credential.user.uid,
+          name: name,
+          email: email,
+          createdAt: serverTimestamp(),
+          appointments: defaultAppointments,
+          treatmentPlan: defaultTreatmentPlan
+        });
+        showMessage(registerMessage, 'Cont creat cu succes.', 'success');
+      } catch (error) {
+        showMessage(registerMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async function () {
+      clearMessage(loginMessage);
+      if (!auth) return;
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        showMessage(loginMessage, 'Introdu email și parolă.', 'error');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showMessage(loginMessage, 'Autentificare reușită.', 'success');
+      } catch (error) {
+        showMessage(loginMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async function () {
+      if (!auth) return;
+      try {
+        await signOut(auth);
+      } catch (error) {
+        showMessage(profileMessage, mapFirebaseError(error), 'error');
+      }
+    });
+
+    document.getElementById('showBookingFormBtn').addEventListener('click', function () {
+      bookingFormCard.classList.remove('form-hidden');
+      bookingFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('hideBookingFormBtn').addEventListener('click', function () {
+      bookingFormCard.classList.add('form-hidden');
+      clearMessage(bookingMessage);
+    });
+
+    document.getElementById('submitBookingBtn').addEventListener('click', async function () {
+      clearMessage(bookingMessage);
+      if (!auth || !auth.currentUser || !db) return;
+
+      const bookingName = document.getElementById('bookingName').value.trim();
+      const bookingPhone = document.getElementById('bookingPhone').value.trim();
+      const bookingDate = document.getElementById('bookingDate').value;
+      const bookingService = document.getElementById('bookingService').value;
+      const bookingDoctor = document.getElementById('bookingDoctor').value;
+      const bookingNotes = document.getElementById('bookingNotes').value.trim();
+
+      if (!bookingName || !bookingPhone || !bookingDate) {
+        showMessage(bookingMessage, 'Completează numele, telefonul și data dorită.', 'error');
+        return;
+      }
+
+      const newAppointment = {
+        date: bookingDate,
+        doctor: bookingDoctor,
+        service: bookingService,
+        notes: bookingNotes || ('Telefon pacient: ' + bookingPhone)
+      };
+
+      try {
+        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+          appointments: arrayUnion(newAppointment)
+        });
+
+        const userSnap = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        const data = userSnap.data();
+        renderAppointments(data.appointments || defaultAppointments);
+        showMessage(bookingMessage, 'Cererea de programare a fost salvată în cont.', 'success');
+        document.getElementById('bookingPhone').value = '';
+        document.getElementById('bookingDate').value = '';
+        document.getElementById('bookingNotes').value = '';
+      } catch (error) {
+        showMessage(bookingMessage, mapFirebaseError(error), 'error');
+      }
+    });
+  </script>
+</body>
+</html>
