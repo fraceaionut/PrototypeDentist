@@ -309,6 +309,48 @@
       color: #417a82;
     }
 
+    .status-paid {
+      background: #ffe8d6;
+      color: #b8672e;
+    }
+
+    .treatment-item-paid {
+      background: #fff8f2;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ffe2cb;
+    }
+
+    .treatment-summary {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid #edf5f5;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      color: var(--muted);
+    }
+
+    .summary-row strong {
+      color: var(--text);
+    }
+
+    .summary-row.total {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .summary-row.remaining {
+      color: #b8672e;
+      font-weight: 700;
+    }
+
     .form-hidden { display: none; }
     .hidden { display: none !important; }
 
@@ -494,39 +536,23 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut,
-      updateProfile
-    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      updateDoc,
-      serverTimestamp,
-      arrayUnion
-    } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-    import { firebaseConfig } from './firebase-config.js';
+        import { firebaseConfig } from './firebase-config.js';
 
     const defaultAppointments = [
       { date: '2026-04-10 09:30', doctor: 'Dr. Popescu', service: 'Consultație generală' },
       { date: '2026-04-18 11:00', doctor: 'Dr. Ionescu', service: 'Igienizare dentară' },
       { date: '2026-04-25 14:00', doctor: 'Dr. Marinescu', service: 'Radiografie dentară' },
-      { date: '2026-05-02 10:15', doctor: 'Dr. Georgescu', service: 'Plombă molar', notes: 'Control la 2 săptămâni după intervenție.' }
+      { date: '2026-05-02 10:15', doctor: 'Dr. Georgescu', service: 'Obturație molar' }
     ];
 
     const defaultTreatmentPlan = [
-      { name: 'Consultație inițială', status: 'Finalizat', price: '200 RON' },
-      { name: 'Detartraj și periaj', status: 'Planificat', price: '350 RON' },
-      { name: 'Obturație carie molar', status: 'În așteptare', price: '450 RON' },
-      { name: 'Tratament canal', status: 'Planificat', price: '900 RON' },
-      { name: 'Coroană ceramică', status: 'În așteptare', price: '1500 RON' }
+      { name: 'Consultație inițială', status: 'Achitat', price: 200, paid: true },
+      { name: 'Radiografie panoramică', status: 'Achitat', price: 180, paid: true },
+      { name: 'Detartraj și periaj', status: 'Achitat', price: 350, paid: true },
+      { name: 'Obturație carie molar', status: 'Neachitat', price: 450, paid: false },
+      { name: 'Tratament de canal', status: 'Neachitat', price: 900, paid: false },
+      { name: 'Coroană ceramică', status: 'Neachitat', price: 1500, paid: false },
+      { name: 'Control final și ajustări', status: 'Neachitat', price: 250, paid: false }
     ];
 
     const registerMessage = document.getElementById('registerMessage');
@@ -563,8 +589,13 @@
 
     function renderAppointments(appointments) {
       const container = document.getElementById('appointmentsList');
-      const items = appointments && appointments.length ? appointments : defaultAppointments;
-      container.innerHTML = items.map(item => {
+      const items = (appointments && appointments.length ? appointments : defaultAppointments)
+        .slice()
+        .sort(function (a, b) {
+          return new Date(a.date.replace(' ', 'T')) - new Date(b.date.replace(' ', 'T'));
+        });
+
+      container.innerHTML = items.map(function (item) {
         const notes = item.notes ? '<br>' + item.notes : '';
         return '<div class="list-item"><strong>' + item.date + '</strong><br>' + item.service + ' - ' + item.doctor + notes + '</div>';
       }).join('');
@@ -573,9 +604,20 @@
     function renderTreatmentPlan(items) {
       const container = document.getElementById('treatmentPlanList');
       const data = items && items.length ? items : defaultTreatmentPlan;
-      container.innerHTML = data.map(item => {
-        return '<div class="list-item"><strong>' + item.name + '</strong><span class="status">' + item.status + '</span><br><span class="price">' + item.price + '</span></div>';
-      }).join('');
+      const total = data.reduce(function (sum, item) { return sum + Number(item.price || 0); }, 0);
+      const paid = data.reduce(function (sum, item) { return sum + (item.paid ? Number(item.price || 0) : 0); }, 0);
+      const remaining = total - paid;
+
+      container.innerHTML = data.map(function (item) {
+        const paidClass = item.paid ? ' treatment-item-paid' : '';
+        const statusClass = item.paid ? 'status status-paid' : 'status';
+        return '<div class="list-item' + paidClass + '"><strong>' + item.name + '</strong><span class="' + statusClass + '">' + item.status + '</span><br><span class="price">' + item.price + ' RON</span></div>';
+      }).join('') +
+      '<div class="treatment-summary">' +
+        '<div class="summary-row"><span>Total achitat</span><strong>' + paid + ' RON</strong></div>' +
+        '<div class="summary-row"><span>Total plan tratament</span><strong>' + total + ' RON</strong></div>' +
+        '<div class="summary-row total remaining"><span>Rest de plată</span><strong>' + remaining + ' RON</strong></div>' +
+      '</div>';
     }
 
     function mapFirebaseError(error) {
@@ -601,7 +643,6 @@
     });
 
     let auth = null;
-    let db = null;
 
     try {
       if (!firebaseConfig || !firebaseConfig.projectId) {
@@ -609,9 +650,8 @@
       } else {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
-        db = getFirestore(app);
 
-        onAuthStateChanged(auth, async function (user) {
+        onAuthStateChanged(auth, function (user) {
           clearMessage(profileMessage);
           clearMessage(bookingMessage);
 
@@ -631,26 +671,11 @@
           document.getElementById('profileUid').textContent = user.uid || '-';
           document.getElementById('profileEmail').textContent = user.email || '-';
           document.getElementById('profileName').textContent = user.displayName || '-';
+          document.getElementById('profileCreatedAt').textContent = user.metadata && user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleString('ro-RO') : '-';
           document.getElementById('bookingName').value = user.displayName || '';
 
-          try {
-            const userRef = doc(db, 'users', user.uid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-              const data = userSnap.data();
-              document.getElementById('profileName').textContent = data.name || user.displayName || '-';
-              const createdAt = data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : null;
-              document.getElementById('profileCreatedAt').textContent = createdAt ? createdAt.toLocaleString('ro-RO') : '-';
-              renderAppointments(data.appointments || defaultAppointments);
-              renderTreatmentPlan(data.treatmentPlan || defaultTreatmentPlan);
-            } else {
-              document.getElementById('profileCreatedAt').textContent = '-';
-              renderAppointments(defaultAppointments);
-              renderTreatmentPlan(defaultTreatmentPlan);
-            }
-          } catch (error) {
-            showMessage(profileMessage, mapFirebaseError(error), 'error');
-          }
+          renderAppointments(defaultAppointments);
+          renderTreatmentPlan(defaultTreatmentPlan);
         });
       }
     } catch (error) {
@@ -659,7 +684,7 @@
 
     document.getElementById('registerBtn').addEventListener('click', async function () {
       clearMessage(registerMessage);
-      if (!auth || !db) return;
+      if (!auth) return;
 
       const name = document.getElementById('registerName').value.trim();
       const email = document.getElementById('registerEmail').value.trim();
@@ -673,14 +698,6 @@
       try {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, { displayName: name });
-        await setDoc(doc(db, 'users', credential.user.uid), {
-          uid: credential.user.uid,
-          name: name,
-          email: email,
-          createdAt: serverTimestamp(),
-          appointments: defaultAppointments,
-          treatmentPlan: defaultTreatmentPlan
-        });
         showMessage(registerMessage, 'Cont creat cu succes.', 'success');
       } catch (error) {
         showMessage(registerMessage, mapFirebaseError(error), 'error');
@@ -728,7 +745,7 @@
 
     document.getElementById('submitBookingBtn').addEventListener('click', async function () {
       clearMessage(bookingMessage);
-      if (!auth || !auth.currentUser || !db) return;
+      if (!auth || !auth.currentUser) return;
 
       const bookingName = document.getElementById('bookingName').value.trim();
       const bookingPhone = document.getElementById('bookingPhone').value.trim();
@@ -750,14 +767,9 @@
       };
 
       try {
-        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-          appointments: arrayUnion(newAppointment)
-        });
-
-        const userSnap = await getDoc(doc(db, 'users', auth.currentUser.uid));
-        const data = userSnap.data();
-        renderAppointments(data.appointments || defaultAppointments);
-        showMessage(bookingMessage, 'Cererea de programare a fost salvată în cont.', 'success');
+        defaultAppointments.push(newAppointment);
+        renderAppointments(defaultAppointments);
+        showMessage(bookingMessage, 'Cererea de programare a fost adăugată local în interfață.', 'success');
         document.getElementById('bookingPhone').value = '';
         document.getElementById('bookingDate').value = '';
         document.getElementById('bookingNotes').value = '';
