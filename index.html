@@ -283,19 +283,64 @@
     // 1) Creează proiectul în Firebase Console
     // 2) Add app -> Web
     // 3) Copiază config-ul aici
-const firebaseConfig = {
-  apiKey: "AIzaSyD-xSrhU3P6R0U0GN9T-hEzsZ3CbGUZmLc",
-  authDomain: "prototypedentist.firebaseapp.com",
-  projectId: "prototypedentist",
-  storageBucket: "prototypedentist.firebasestorage.app",
-  messagingSenderId: "881077220842",
-  appId: "1:881077220842:web:2d162d491f9324799c6e93",
-  measurementId: "G-329N27BD25"
-};
+    // config va fi încărcat din fișier extern firebase-config.js
+    // vezi instrucțiunile de mai jos
+    import { firebaseConfig } from './firebase-config.js';
 
     const hasRealFirebaseConfig = Object.values(firebaseConfig).every(value => value && !String(value).startsWith('PASTE_YOUR'));
 
     const registerMessage = document.getElementById('registerMessage');
+
+    const defaultAppointments = [
+      {
+        date: '2026-04-10 09:30',
+        doctor: 'Dr. Popescu',
+        service: 'Consultație generală'
+      },
+      {
+        date: '2026-04-18 11:00',
+        doctor: 'Dr. Ionescu',
+        service: 'Igienizare dentară'
+      },
+      {
+        date: '2026-04-25 14:00',
+        doctor: 'Dr. Marinescu',
+        service: 'Radiografie dentară'
+      },
+      {
+        date: '2026-05-02 10:15',
+        doctor: 'Dr. Georgescu',
+        service: 'Plombă molar'
+      }
+    ];
+
+    const defaultTreatmentPlan = [
+      {
+        name: 'Consultație inițială',
+        status: 'Finalizat',
+        price: '200 RON'
+      },
+      {
+        name: 'Detartraj și periaj',
+        status: 'Planificat',
+        price: '350 RON'
+      },
+      {
+        name: 'Obturație carie molar',
+        status: 'În așteptare',
+        price: '450 RON'
+      },
+      {
+        name: 'Tratament canal',
+        status: 'Planificat',
+        price: '900 RON'
+      },
+      {
+        name: 'Coroană ceramică',
+        status: 'În așteptare',
+        price: '1500 RON'
+      }
+    ];
     const loginMessage = document.getElementById('loginMessage');
     const profileMessage = document.getElementById('profileMessage');
 
@@ -377,12 +422,12 @@ const firebaseConfig = {
               ? createdAt.toLocaleString('ro-RO')
               : '-';
 
-            renderAppointments(data.appointments || []);
-            renderTreatmentPlan(data.treatmentPlan || []);
+            renderAppointments(data.appointments || defaultAppointments);
+            renderTreatmentPlan(data.treatmentPlan || defaultTreatmentPlan);
           } else {
             document.getElementById('profileCreatedAt').textContent = '-';
-            renderAppointments([]);
-            renderTreatmentPlan([]);
+            renderAppointments(defaultAppointments);
+            renderTreatmentPlan(defaultTreatmentPlan);
           }
         } catch (error) {
           showMessage(profileMessage, mapFirebaseError(error), 'error');
@@ -412,55 +457,8 @@ const firebaseConfig = {
           name,
           email,
           createdAt: serverTimestamp(),
-          appointments: [
-            {
-              date: '2026-04-10 09:30',
-              doctor: 'Dr. Popescu',
-              service: 'Consultație generală'
-            },
-            {
-              date: '2026-04-18 11:00',
-              doctor: 'Dr. Ionescu',
-              service: 'Igienizare dentară'
-            },
-            {
-              date: '2026-04-25 14:00',
-              doctor: 'Dr. Marinescu',
-              service: 'Radiografie dentară'
-            },
-            {
-              date: '2026-05-02 10:15',
-              doctor: 'Dr. Georgescu',
-              service: 'Plombă molar'
-            }
-          ],
-          treatmentPlan: [
-            {
-              name: 'Consultație inițială',
-              status: 'Finalizat',
-              price: '200 RON'
-            },
-            {
-              name: 'Detartraj și periaj',
-              status: 'Planificat',
-              price: '350 RON'
-            },
-            {
-              name: 'Obturație carie molar',
-              status: 'În așteptare',
-              price: '450 RON'
-            },
-            {
-              name: 'Tratament canal',
-              status: 'Planificat',
-              price: '900 RON'
-            },
-            {
-              name: 'Coroană ceramică',
-              status: 'În așteptare',
-              price: '1500 RON'
-            }
-          ]
+          appointments: defaultAppointments,
+          treatmentPlan: defaultTreatmentPlan
         });
 
         showMessage(registerMessage, 'Cont creat cu succes.', 'success');
