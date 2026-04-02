@@ -651,66 +651,73 @@
     }
 
     function buildBookingEmailBody() {
-      const profileName = document.getElementById('profileName') ? document.getElementById('profileName').textContent : '-';
-      const profileEmail = document.getElementById('profileEmail') ? document.getElementById('profileEmail').textContent : '-';
-      const bookingName = document.getElementById('bookingName') && document.getElementById('bookingName').value.trim() ? document.getElementById('bookingName').value.trim() : profileName;
-      const bookingPhone = document.getElementById('bookingPhone') ? document.getElementById('bookingPhone').value.trim() : '';
-      const bookingDate = document.getElementById('bookingDate') ? document.getElementById('bookingDate').value : '';
-      const bookingService = document.getElementById('bookingService') ? document.getElementById('bookingService').value : '';
-      const bookingDoctor = document.getElementById('bookingDoctor') ? document.getElementById('bookingDoctor').value : '';
-      const bookingNotes = document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value.trim() : '';
+      const profileNameEl = document.getElementById('profileName');
+      const profileEmailEl = document.getElementById('profileEmail');
+      const bookingNameEl = document.getElementById('bookingName');
+      const bookingPhoneEl = document.getElementById('bookingPhone');
+      const bookingDateEl = document.getElementById('bookingDate');
+      const bookingServiceEl = document.getElementById('bookingService');
+      const bookingDoctorEl = document.getElementById('bookingDoctor');
+      const bookingNotesEl = document.getElementById('bookingNotes');
 
-      return 'Buna ziua,
+      const profileName = profileNameEl ? profileNameEl.textContent : '-';
+      const profileEmail = profileEmailEl ? profileEmailEl.textContent : '-';
+      const bookingName = bookingNameEl && bookingNameEl.value.trim() ? bookingNameEl.value.trim() : profileName;
+      const bookingPhone = bookingPhoneEl ? bookingPhoneEl.value.trim() : '';
+      const bookingDate = bookingDateEl ? bookingDateEl.value : '';
+      const bookingService = bookingServiceEl ? bookingServiceEl.value : '';
+      const bookingDoctor = bookingDoctorEl ? bookingDoctorEl.value : '';
+      const bookingNotes = bookingNotesEl ? bookingNotesEl.value.trim() : '';
 
-' +
-        'Doresc o programare.
-
-' +
-        'Nume: ' + bookingName + '
-' +
-        'Email: ' + profileEmail + '
-' +
-        'Telefon: ' + bookingPhone + '
-' +
-        'Serviciu dorit: ' + bookingService + '
-' +
-        'Data preferata: ' + bookingDate + '
-' +
-        'Medic preferat: ' + bookingDoctor + '
-' +
-        'Detalii: ' + bookingNotes + '
-
-' +
-        'Va rog sa ma contactati pentru confirmare.
-';
+      return [
+        'Buna ziua,',
+        '',
+        'Doresc o programare.',
+        '',
+        'Nume: ' + bookingName,
+        'Email: ' + profileEmail,
+        'Telefon: ' + bookingPhone,
+        'Serviciu dorit: ' + bookingService,
+        'Data preferata: ' + bookingDate,
+        'Medic preferat: ' + bookingDoctor,
+        'Detalii: ' + bookingNotes,
+        '',
+        'Va rog sa ma contactati pentru confirmare.'
+      ].join('
+');
     }
 
     function buildWhatsAppBody() {
-      const profileName = document.getElementById('profileName') ? document.getElementById('profileName').textContent : '-';
-      const profileEmail = document.getElementById('profileEmail') ? document.getElementById('profileEmail').textContent : '-';
-      const bookingName = document.getElementById('bookingName') && document.getElementById('bookingName').value.trim() ? document.getElementById('bookingName').value.trim() : profileName;
-      const bookingPhone = document.getElementById('bookingPhone') ? document.getElementById('bookingPhone').value.trim() : '';
-      const bookingDate = document.getElementById('bookingDate') ? document.getElementById('bookingDate').value : '';
-      const bookingService = document.getElementById('bookingService') ? document.getElementById('bookingService').value : '';
-      const bookingDoctor = document.getElementById('bookingDoctor') ? document.getElementById('bookingDoctor').value : '';
-      const bookingNotes = document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value.trim() : '';
+      const profileNameEl = document.getElementById('profileName');
+      const profileEmailEl = document.getElementById('profileEmail');
+      const bookingNameEl = document.getElementById('bookingName');
+      const bookingPhoneEl = document.getElementById('bookingPhone');
+      const bookingDateEl = document.getElementById('bookingDate');
+      const bookingServiceEl = document.getElementById('bookingService');
+      const bookingDoctorEl = document.getElementById('bookingDoctor');
+      const bookingNotesEl = document.getElementById('bookingNotes');
 
-      return 'Buna ziua! Doresc o programare la dentist.
+      const profileName = profileNameEl ? profileNameEl.textContent : '-';
+      const profileEmail = profileEmailEl ? profileEmailEl.textContent : '-';
+      const bookingName = bookingNameEl && bookingNameEl.value.trim() ? bookingNameEl.value.trim() : profileName;
+      const bookingPhone = bookingPhoneEl ? bookingPhoneEl.value.trim() : '';
+      const bookingDate = bookingDateEl ? bookingDateEl.value : '';
+      const bookingService = bookingServiceEl ? bookingServiceEl.value : '';
+      const bookingDoctor = bookingDoctorEl ? bookingDoctorEl.value : '';
+      const bookingNotes = bookingNotesEl ? bookingNotesEl.value.trim() : '';
 
-' +
-        'Nume: ' + bookingName + '
-' +
-        'Email: ' + profileEmail + '
-' +
-        'Telefon: ' + bookingPhone + '
-' +
-        'Serviciu dorit: ' + bookingService + '
-' +
-        'Data preferata: ' + bookingDate + '
-' +
-        'Medic preferat: ' + bookingDoctor + '
-' +
-        'Detalii: ' + bookingNotes;
+      return [
+        'Buna ziua! Doresc o programare la dentist.',
+        '',
+        'Nume: ' + bookingName,
+        'Email: ' + profileEmail,
+        'Telefon: ' + bookingPhone,
+        'Serviciu dorit: ' + bookingService,
+        'Data preferata: ' + bookingDate,
+        'Medic preferat: ' + bookingDoctor,
+        'Detalii: ' + bookingNotes
+      ].join('
+');
     }
 
     tabs.forEach(function (tab) {
