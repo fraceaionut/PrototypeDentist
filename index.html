@@ -455,7 +455,7 @@
           <h2 class="section-title">Bun venit în contul tău</h2>
           <p>Ai acces rapid la datele tale de pacient. Poți solicita o nouă programare folosind formularul dedicat.</p>
           <div class="cta-actions">
-            <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum</button>
+            <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum prin email</button>
             <button class="ghost" id="hideBookingFormBtn">Ascunde formularul</button>
             <button class="secondary" id="logoutBtn">Logout</button>
           </div>
@@ -575,6 +575,7 @@
     const loginPanel = document.getElementById('loginPanel');
     const profilePanel = document.getElementById('profilePanel');
     const bookingFormCard = document.getElementById('bookingFormCard');
+    const bookingEmail = 'adauga-aici-emailul-clinicii@example.com';
 
     function showMessage(element, text, type) {
       if (!element) return;
@@ -760,8 +761,32 @@
     });
 
     document.getElementById('showBookingFormBtn').addEventListener('click', function () {
-      bookingFormCard.classList.remove('form-hidden');
-      bookingFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!auth || !auth.currentUser) {
+        showMessage(profileMessage, 'Trebuie să fii logat pentru a trimite emailul de programare.', 'error');
+        return;
+      }
+
+      const profileName = document.getElementById('profileName') ? document.getElementById('profileName').textContent : '';
+      const profileEmail = document.getElementById('profileEmail') ? document.getElementById('profileEmail').textContent : '';
+      const subject = encodeURIComponent('Cerere programare dentist');
+      const body = encodeURIComponent(
+        'Bună ziua,
+
+Doresc o programare.
+
+Nume: ' + (profileName || '-') + '
+Email: ' + (profileEmail || '-') + '
+Telefon: 
+Serviciu dorit: 
+Dată preferată: 
+Medic preferat: 
+
+Vă rog să mă contactați pentru confirmare.
+'
+      );
+
+      window.location.href = 'mailto:' + bookingEmail + '?subject=' + subject + '&body=' + body;
+    });
     });
 
     document.getElementById('hideBookingFormBtn').addEventListener('click', function () {
