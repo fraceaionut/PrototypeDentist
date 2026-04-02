@@ -681,11 +681,9 @@
           loginPanel.classList.remove('active');
           profilePanel.classList.add('active');
 
-          document.getElementById('profileUid').textContent = user.uid || '-';
-          document.getElementById('profileEmail').textContent = user.email || '-';
+                    document.getElementById('profileEmail').textContent = user.email || '-';
           document.getElementById('profileName').textContent = user.displayName || '-';
-          document.getElementById('profileCreatedAt').textContent = user.metadata && user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleString('ro-RO') : '-';
-          document.getElementById('bookingName').value = user.displayName || '';
+                    document.getElementById('bookingName').value = user.displayName || '';
 
           renderAppointments(defaultAppointments);
           renderTreatmentPlan(defaultTreatmentPlan);
