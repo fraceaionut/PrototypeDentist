@@ -374,3 +374,10 @@
 #loginPanel .card {
   width: 100%;
 }
+.content {
+  padding: 40px 32px 34px;
+}
+#guestTabs {
+  max-width: 520px;
+  margin: 0 auto 24px;
+}
