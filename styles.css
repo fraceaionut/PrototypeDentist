@@ -158,6 +158,14 @@
       gap: 18px;
     }
 
+      .auth-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        max-width: 520px;
+        margin: 0 auto;
+      }
+
     .card {
       background: var(--card);
       border: 1px solid var(--border);
