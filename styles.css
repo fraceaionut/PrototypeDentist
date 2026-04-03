@@ -369,3 +369,8 @@
       .content,
       .hero { padding: 22px; }
     }
+
+#registerPanel .card,
+#loginPanel .card {
+  width: 100%;
+}
