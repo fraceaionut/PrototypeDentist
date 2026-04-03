@@ -11,15 +11,16 @@
     <section class="hero">
       <div class="header">
         <div class="hero-badge">Portal pacient</div>
-        <h1>Zâmbet sănătos, programări simple și plan de tratament clar.</h1>
-        <p style="font-size:18px; font-weight:700; color: var(--accent-dark); margin-top:10px;">Pariu că nu o să doară?</p>
+        <h1>Zambet sanatos, programari simple si plan de tratament clar.</h1>
+        <p class="motto">Pariu ca nu o sa doara?</p>
+        <p>Interfata curata, luminoasa, cu accente turcoaz si carduri aerisite pentru un portal de clinica dentara.</p>
       </div>
       <div class="hero-side">
-        <h3>Clinică dentară modernă</h3>
-        <p>Programări rapide, informații centralizate și o experiență digitală simplă pentru pacienți.</p>
+        <h3>Clinica dentara moderna</h3>
+        <p>Programari rapide, informatii centralizate si o experienta digitala simpla pentru pacienti.</p>
         <div class="quick-info">
           <div><strong>Program</strong><br>L-V 09:00-18:00</div>
-          <div><strong>Locație</strong><br>Timișoara</div>
+          <div><strong>Locatie</strong><br>Timisoara</div>
           <div><strong>Contact</strong><br>Portal pacient</div>
         </div>
       </div>
@@ -34,8 +35,8 @@
       <section class="panel active" id="registerPanel">
         <div class="auth-layout">
           <div class="card">
-            <h3>Creează cont</h3>
-            <p class="card-subtitle">Înregistrează-te ca să vezi programările și planul de tratament în contul tău.</p>
+            <h3>Creeaza cont</h3>
+            <p class="card-subtitle">Inregistreaza-te ca sa vezi programarile si planul de tratament in contul tau.</p>
             <div class="field">
               <label for="registerName">Nume</label>
               <input id="registerName" type="text" placeholder="Ion Popescu" />
@@ -45,18 +46,19 @@
               <input id="registerEmail" type="email" placeholder="ion@example.com" />
             </div>
             <div class="field">
-              <label for="registerPassword">Parolă</label>
+              <label for="registerPassword">Parola</label>
               <input id="registerPassword" type="password" placeholder="Minimum 6 caractere" />
             </div>
-            <button class="primary" id="registerBtn">Creează cont</button>
+            <button class="primary" id="registerBtn">Creeaza cont</button>
             <div class="message" id="registerMessage"></div>
           </div>
+
           <div class="card">
-            <h3>Bine ai venit</h3>
-            <p class="card-subtitle">Portalul afișează programări, planul de tratament și un formular simplu pentru o nouă programare.</p>
-            <div class="list-item"><strong>Autentificare sigură</strong><br>Contul este gestionat prin Firebase Authentication.</div>
-            <div class="list-item"><strong>Plan de tratament</strong><br>Poți vedea intervențiile și costurile estimate.</div>
-            <div class="list-item"><strong>Programare rapidă</strong><br>Ai un formular simplu pentru a cere o nouă programare.</div>
+            <h3>Ce gasesti in portal</h3>
+            <p class="card-subtitle">Dupa autentificare vezi imediat sectiunile importante pentru pacient.</p>
+            <div class="list-item"><strong>Programarile la dentist</strong><br>Lista vizitelor planificate si detalii despre medic.</div>
+            <div class="list-item"><strong>Planul de tratament</strong><br>Status si pret pentru fiecare etapa.</div>
+            <div class="list-item"><strong>Contact rapid</strong><br>Email sau WhatsApp direct din cont.</div>
           </div>
         </div>
       </section>
@@ -65,67 +67,46 @@
         <div class="auth-layout">
           <div class="card">
             <h3>Autentificare</h3>
-            <p class="card-subtitle">Intră în cont pentru a-ți vedea datele și programările viitoare.</p>
+            <p class="card-subtitle">Intra in cont pentru a-ti vedea datele si programarile viitoare.</p>
             <div class="field">
               <label for="loginEmail">Email</label>
               <input id="loginEmail" type="email" placeholder="ion@example.com" />
             </div>
             <div class="field">
-              <label for="loginPassword">Parolă</label>
+              <label for="loginPassword">Parola</label>
               <input id="loginPassword" type="password" placeholder="Parola ta" />
             </div>
-            <button class="primary" id="loginBtn">Loghează-te</button>
+            <button class="primary" id="loginBtn">Logheaza-te</button>
             <div class="message" id="loginMessage"></div>
           </div>
+
           <div class="card">
-            <h3>Ce găsești în portal</h3>
-            <p class="card-subtitle">După login vei vedea imediat secțiunile importante pentru pacient.</p>
-            <div class="list-item"><strong>Programările la dentist</strong><br>Lista vizitelor planificate și detalii despre medic.</div>
-            <div class="list-item"><strong>Planul de tratament</strong><br>Status și preț pentru fiecare etapă.</div>
-            <div class="list-item"><strong>Buton rapid de programare</strong><br>Poți cere o nouă programare direct din cont.</div>
+            <h3>Ce gasesti in portal</h3>
+            <p class="card-subtitle">Dupa autentificare vezi imediat sectiunile importante pentru pacient.</p>
+            <div class="list-item"><strong>Programarile la dentist</strong><br>Lista vizitelor planificate si detalii despre medic.</div>
+            <div class="list-item"><strong>Planul de tratament</strong><br>Status si pret pentru fiecare etapa.</div>
+            <div class="list-item"><strong>Contact rapid</strong><br>Email sau WhatsApp direct din cont.</div>
           </div>
         </div>
       </section>
 
       <section class="panel" id="profilePanel">
-     <div class="profile-grid">
-          <div>
-            <div class="card">
-              <h3>Profil utilizator</h3>
-              <div class="profile-row"><strong>Nume:</strong> <span id="profileName">-</span></div>
-              <div class="profile-row"><strong>Email:</strong> <span id="profileEmail">-</span></div>
-            </div>
-
-            <div class="card" style="margin-top:18px;">
-              <h3>Programări la dentist</h3>
-              <div id="appointmentsList"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="card">
-              <h3>Plan de tratament</h3>
-              <div id="treatmentPlanList"></div>
-            </div>
-          </div>
-        </div>
-        
         <div class="message" id="profileMessage"></div>
 
         <div class="cta-box">
-          <h2 class="section-title">Bun venit în contul tău</h2>
-          <p>Ai acces rapid la datele tale de pacient. Poți solicita o nouă programare folosind formularul dedicat.</p>
+          <h2 class="section-title">Bun venit in contul tau</h2>
+          <p>Ai acces rapid la datele tale de pacient si la optiuni de programare.</p>
           <div class="cta-actions">
-            <button class="primary" id="showBookingFormBtn" style="width:auto; min-width:220px;">Programează-mă acum prin email</button>
-            <button class="secondary" id="whatsAppBookingBtn" style="width:auto; min-width:220px;">Programează-mă prin WhatsApp</button>
-            
+            <button class="primary" id="emailBookingBtn" style="width:auto; min-width:220px;">Programeaza-ma prin email</button>
+            <button class="secondary" id="whatsAppBookingBtn" style="width:auto; min-width:220px;">Programeaza-ma prin WhatsApp</button>
+            <button class="ghost" id="toggleBookingFormBtn" style="width:auto; min-width:220px;">Completeaza formularul</button>
             <button class="secondary" id="logoutBtn">Logout</button>
           </div>
         </div>
 
         <div class="card form-hidden" id="bookingFormCard">
           <h3>Formular programare</h3>
-          <p class="card-subtitle">Completează câteva detalii și cererea ta de programare va fi salvată în cont.</p>
+          <p class="card-subtitle">Completeaza cateva detalii pentru cererea de programare.</p>
           <div class="booking-grid">
             <div>
               <div class="field">
@@ -137,7 +118,7 @@
                 <input id="bookingPhone" type="text" placeholder="07xx xxx xxx" />
               </div>
               <div class="field">
-                <label for="bookingDate">Data dorită</label>
+                <label for="bookingDate">Data dorita</label>
                 <input id="bookingDate" type="date" />
               </div>
             </div>
@@ -145,10 +126,10 @@
               <div class="field">
                 <label for="bookingService">Serviciu dorit</label>
                 <select id="bookingService">
-                  <option>Consultație generală</option>
-                  <option>Igienizare dentară</option>
-                  <option>Radiografie dentară</option>
-                  <option>Plombă / obturație</option>
+                  <option>Consultatie generala</option>
+                  <option>Igienizare dentara</option>
+                  <option>Radiografie dentara</option>
+                  <option>Plomba / obturatie</option>
                   <option>Tratament canal</option>
                 </select>
               </div>
@@ -163,19 +144,39 @@
               </div>
               <div class="field">
                 <label for="bookingNotes">Detalii suplimentare</label>
-                <textarea id="bookingNotes" placeholder="Descrie pe scurt problema sau preferințele tale."></textarea>
+                <textarea id="bookingNotes" placeholder="Descrie pe scurt problema sau preferintele tale."></textarea>
               </div>
             </div>
           </div>
-          <button class="primary" id="submitBookingBtn">Trimite cererea</button>
+          <button class="primary" id="submitBookingBtn">Adauga local programarea</button>
           <div class="message" id="bookingMessage"></div>
         </div>
 
-       
+        <div class="profile-grid">
+          <div>
+            <div class="card">
+              <h3>Profil utilizator</h3>
+              <div class="profile-row"><strong>Nume:</strong> <span id="profileName">-</span></div>
+              <div class="profile-row"><strong>Email:</strong> <span id="profileEmail">-</span></div>
+            </div>
+
+            <div class="card" style="margin-top:18px;">
+              <h3>Programari la dentist</h3>
+              <div id="appointmentsList"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <h3>Plan de tratament</h3>
+              <div id="treatmentPlanList"></div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   </div>
 
-<script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
