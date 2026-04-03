@@ -122,7 +122,7 @@ export function bindAuth({
     if (bookingName) bookingName.value = user.displayName || "";
 
     
-    if (hero) hero.style.display = "none";
+    if (hero) hero.style.display = "grid";
 
     renderAppointments();
     renderTreatmentPlan();
