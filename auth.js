@@ -97,8 +97,9 @@ export function bindAuth({
   onAuthStateChanged(auth, user => {
     clearMessage(profileMessage);
     clearMessage(bookingMessage);
-
+    const hero = document.getElementById("heroSection");
     if (!user) {
+      if (hero) hero.style.display = "none";
       if (guestTabs) guestTabs.classList.remove("hidden");
       if (profilePanel) profilePanel.classList.remove("active");
       if (bookingFormCard) bookingFormCard.classList.add("form-hidden");
@@ -119,6 +120,9 @@ export function bindAuth({
     if (profileName) profileName.textContent = user.displayName || "-";
     if (profileEmail) profileEmail.textContent = user.email || "-";
     if (bookingName) bookingName.value = user.displayName || "";
+
+    
+    if (hero) hero.style.display = "none";
 
     renderAppointments();
     renderTreatmentPlan();
