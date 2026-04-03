@@ -132,14 +132,6 @@
       font-weight: 700;
     }
 
-      .auth-layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 18px;
-        max-width: 520px;
-        margin: 0 auto;
-      }
-
     .tab.active,
     .tab:hover {
       background: var(--accent);
@@ -150,7 +142,6 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    .auth-layout,
     .profile-grid,
     .booking-grid {
       display: grid;
