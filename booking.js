@@ -1,8 +1,8 @@
 export const defaultAppointments = [
-  { date: "2026-04-10 09:30", doctor: "Dr. Popescu", service: "Consultatie generala" },
-  { date: "2026-04-18 11:00", doctor: "Dr. Ionescu", service: "Igienizare dentara" },
-  { date: "2026-04-25 14:00", doctor: "Dr. Marinescu", service: "Radiografie dentara" },
-  { date: "2026-05-02 10:15", doctor: "Dr. Georgescu", service: "Obturatie molar" }
+  { date: "2026-04-10 09:30", doctor: "Dr. Marcu Cristian", service: "Consultatie generala" },
+  { date: "2026-04-18 11:00", doctor: "Dr. Popa Sebastian", service: "Igienizare dentara" },
+  { date: "2026-04-25 14:00", doctor: "Dr. Stoianov Vlad", service: "Radiografie dentara" },
+  { date: "2026-05-02 10:15", doctor: "Dr. Marcu Oana", service: "Obturatie molar" }
 ];
 
 export const defaultTreatmentPlan = [
