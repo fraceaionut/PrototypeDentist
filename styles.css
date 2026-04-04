@@ -49,6 +49,10 @@
         display: none;
       }
 
+      #bookingSection {
+        display: none;
+      }
+
     .hero-badge {
       display: inline-block;
       padding: 8px 14px;
