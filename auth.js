@@ -98,11 +98,13 @@ export function bindAuth({
     clearMessage(profileMessage);
     clearMessage(bookingMessage);
     const hero = document.getElementById("heroSection");
+    const bookingActions = document.getElementById("bookingActions");
     if (!user) {
       if (hero) hero.style.display = "none";
       if (guestTabs) guestTabs.classList.remove("hidden");
       if (profilePanel) profilePanel.classList.remove("active");
       if (bookingFormCard) bookingFormCard.classList.add("form-hidden");
+      if(bookingActions) bookingActions.style.dysplay = "none";
       switchTo("registerPanel", panels, tabs);
       return;
     }
@@ -123,6 +125,7 @@ export function bindAuth({
 
     
     if (hero) hero.style.display = "grid";
+    if(bookingActions) bookingActions.style.dysplay = "grid";
 
     renderAppointments();
     renderTreatmentPlan();
