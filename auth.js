@@ -105,7 +105,7 @@ export function bindAuth({
       if (profilePanel) profilePanel.classList.remove("active");
       if (bookingFormCard) bookingFormCard.classList.add("form-hidden");
       if(bookingActions) bookingActions.style.dysplay = "none";
-      switchTo("registerPanel", panels, tabs);
+      switchTo("loginPanel", panels, tabs);
       return;
     }
 
