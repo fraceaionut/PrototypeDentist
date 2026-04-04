@@ -17,8 +17,8 @@ import { bindAuth } from "./auth.js";
 
 window.__firebaseAuthHelpers = { onAuthStateChanged };
 
-const bookingEmail = "adauga-aici-emailul-clinicii@example.com";
-const whatsAppNumber = "40700000000";
+const bookingEmail = "identistmco@gmail.com";
+const whatsAppNumber = "40737675555";
 
 const registerMessage = document.getElementById("registerMessage");
 const loginMessage = document.getElementById("loginMessage");
