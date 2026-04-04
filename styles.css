@@ -130,7 +130,7 @@
       }
 
     .tab {
-      min-width: 140px;
+      min-width: 120px;
       border: 1px solid var(--border);
       background: white;
       color: var(--text);
