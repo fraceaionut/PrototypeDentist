@@ -125,7 +125,7 @@ export function bindAuth({
 
     
     if (hero) hero.style.display = "grid";
-    if(bookingActions) bookingActions.style.dysplay = "grid";
+    if(bookingActions) bookingActions.style.display = "grid";
 
     renderAppointments();
     renderTreatmentPlan();
